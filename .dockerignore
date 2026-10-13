@@ -1,0 +1,19 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+*.iml
+.vscode
+
+# Maven
+target/
+*/target/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Other
+README.md
