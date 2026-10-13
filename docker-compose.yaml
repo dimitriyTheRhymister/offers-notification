@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  postgres-offers:
+    image: postgres:16
+    container_name: pg-offers
+    environment:
+      POSTGRES_DB: offers_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-offers-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d offers_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres-notification:
+    image: postgres:16
+    container_name: pg-notification
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg-notification-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d notification_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pg-offers-data:
+  pg-notification-data:
