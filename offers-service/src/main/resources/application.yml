@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: offers-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/offers_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+notification:
+  service:
+    url: ${NOTIFICATION_URL:http://localhost:8081/internal/api/v1/events}
+
+outbox:
+  worker:
+    fixed-delay-ms: 5000
+    batch-size: 20
