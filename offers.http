@@ -1,0 +1,11 @@
+### Create offer
+POST http://localhost:8080/api/v1/offers
+Content-Type: application/json
+
+{
+  "customerName": "Ivan Petrov",
+  "customerEmail": "ivan@example.com",
+  "customerTelegram": "@ivan",
+  "title": "Need Java developer",
+  "description": "Need help with Spring Boot"
+}
