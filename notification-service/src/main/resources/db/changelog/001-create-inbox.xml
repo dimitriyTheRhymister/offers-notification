@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="001-create-inbox" author="dev">
+        <createTable tableName="inbox">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="event_id" type="uuid">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="event_type" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payload" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+            <column name="received_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed_at" type="timestamp with time zone"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
