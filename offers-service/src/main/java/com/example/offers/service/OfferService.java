@@ -3,7 +3,10 @@ package com.example.offers.service;
 import com.example.offers.dto.OfferRequest;
 import com.example.offers.dto.OfferResponse;
 import com.example.offers.entity.Offer;
+import com.example.offers.entity.OutboxEntry;
+import com.example.offers.entity.OutboxStatus;
 import com.example.offers.repository.OfferRepository;
+import com.example.offers.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -18,12 +23,15 @@ import java.util.UUID;
 public class OfferService {
 
     private final OfferRepository offerRepository;
+    private final OutboxRepository outboxRepository;
 
     @Transactional
     public OfferResponse create(OfferRequest request) {
         Instant now = Instant.now();
+        UUID offerId = UUID.randomUUID();
+
         Offer offer = Offer.builder()
-                .id(UUID.randomUUID())
+                .id(offerId)
                 .customerName(request.getCustomerName())
                 .customerEmail(request.getCustomerEmail())
                 .customerTelegram(request.getCustomerTelegram())
@@ -32,8 +40,32 @@ public class OfferService {
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
-        Offer saved = offerRepository.save(offer);
-        return toResponse(saved);
+        offerRepository.save(offer);
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("offerId", offerId);
+        payload.put("customerName", request.getCustomerName());
+        payload.put("customerEmail", request.getCustomerEmail());
+        payload.put("customerTelegram", request.getCustomerTelegram());
+        payload.put("title", request.getTitle());
+        payload.put("description", request.getDescription());
+
+        OutboxEntry outboxEntry = OutboxEntry.builder()
+                .id(UUID.randomUUID())
+                .eventId(UUID.randomUUID())
+                .eventType("OfferCreated")
+                .aggregateType("Offer")
+                .aggregateId(offerId)
+                .payload(payload)
+                .status(OutboxStatus.NEW)
+                .retryCount(0)
+                .nextAttemptAt(now)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        outboxRepository.save(outboxEntry);
+
+        return toResponse(offer);
     }
 
     @Transactional(readOnly = true)
@@ -83,4 +115,5 @@ public class OfferService {
                 .updatedAt(offer.getUpdatedAt())
                 .build();
     }
+
 }
