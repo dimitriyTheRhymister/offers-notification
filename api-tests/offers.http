@@ -1,0 +1,64 @@
+### Variables
+@base = http://localhost:8080
+@notificationBase = http://localhost:8081
+@k8sBase = http://192.168.49.2
+
+### Create offer (Docker local)
+POST {{base}}/api/v1/offers
+Content-Type: application/json
+
+{
+  "customerName": "Ivan Petrov",
+  "customerEmail": "ivan@example.com",
+  "customerTelegram": "@ivan",
+  "title": "Need Java developer",
+  "description": "Need help with Spring Boot project"
+}
+
+### List offers
+GET {{base}}/api/v1/offers?page=0&size=20
+Accept: application/json
+
+### Get notifications (after 5 seconds)
+GET {{notificationBase}}/api/v1/notifications
+Accept: application/json
+
+### Get events (after 5 seconds)
+GET {{notificationBase}}/api/v1/events
+Accept: application/json
+
+### Create offer (via K8s Ingress)
+POST http://192.168.49.2/api/v1/offers
+Host: offers-notification.local
+Content-Type: application/json
+
+{
+  "customerName": "K8s Client",
+  "customerEmail": "k8s-client@example.com",
+  "customerTelegram": "@k8sclient",
+  "title": "Test K8s Ingress",
+  "description": "Via Ingress"
+}
+
+### Get notifications via K8s Ingress (after 5 seconds)
+GET http://192.168.49.2/api/v1/notifications
+Host: offers-notification.local
+Accept: application/json
+
+### Duplicate event (idempotency test) - replace ID
+POST {{notificationBase}}/internal/api/v1/events
+Content-Type: application/json
+
+{
+  "eventId": "REPLACE-WITH-REAL-EVENT-ID",
+  "eventType": "OfferCreated",
+  "occurredAt": "2026-10-18T12:00:00Z",
+  "source": "offers-service",
+  "payload": {
+    "offerId": "00000000-0000-0000-0000-000000000000",
+    "customerName": "Test",
+    "customerEmail": "test@example.com",
+    "title": "Test",
+    "description": "Test"
+  }
+}
