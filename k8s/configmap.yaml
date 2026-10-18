@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: offers-notification
+data:
+  OFFERS_DB_URL: jdbc:postgresql://postgres-offers:5432/offers_db
+  NOTIFICATION_DB_URL: jdbc:postgresql://postgres-notification:5432/notification_db
+  NOTIFICATION_URL: http://notification-service:8080/internal/api/v1/events
